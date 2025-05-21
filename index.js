@@ -57,6 +57,18 @@ async function run() {
       res.send(result);
     });
 
+    // show top recipes
+    app.get("/top-recipes", async (req, res) => {
+      const result = await recipesCollections
+        .find()
+        .sort({ likes: -1 })
+        .limit(6)
+        .toArray();
+      console.log(result);
+
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
