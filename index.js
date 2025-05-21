@@ -35,7 +35,7 @@ async function run() {
     await client.connect();
 
     const recipesCollections = client.db("dishdiarydb").collection("recipes");
-
+    // Save data to the database
     app.post("/recipes", async (req, res) => {
       const newRecipe = req.body;
       console.log(newRecipe);
@@ -43,11 +43,13 @@ async function run() {
       res.send(result);
     });
 
+    // show all recipes to the ui
     app.get("/recipes", async (req, res) => {
       const result = await recipesCollections.find().toArray();
       res.send(result);
     });
 
+    // show each recipe details
     app.get("/recipes/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
