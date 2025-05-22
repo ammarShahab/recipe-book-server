@@ -69,6 +69,20 @@ async function run() {
       res.send(result);
     });
 
+    // show myrecipes to ui that i added
+
+    app.get("/recipes-email/:email", async (req, res) => {
+      console.log(req.params);
+
+      const email = req.params.email;
+      // console.log(email);
+      // const query = { email: email };
+      const result = await recipesCollections.find({ email: email }).toArray();
+      console.log(result);
+
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
