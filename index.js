@@ -8,15 +8,6 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-/* 
-User: dishdiarydb
-password: iGJMt4UGMOlR5l1C
-
-.env
-DB_USER=dishdiarydb
-DB_PASS=iGJMt4UGMOlR5l1C
-*/
-
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bmunlsr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -38,7 +29,7 @@ async function run() {
     // Save data to the database
     app.post("/recipes", async (req, res) => {
       const newRecipe = req.body;
-      console.log(newRecipe);
+      // console.log(newRecipe);
       const result = await recipesCollections.insertOne(newRecipe);
       res.send(result);
     });
@@ -64,7 +55,7 @@ async function run() {
         .sort({ likes: -1 })
         .limit(6)
         .toArray();
-      console.log(result);
+      // console.log(result);
 
       res.send(result);
     });
@@ -72,13 +63,13 @@ async function run() {
     // show myrecipes to ui that i added
 
     app.get("/recipes-email/:email", async (req, res) => {
-      console.log(req.params);
+      // console.log(req.params);
 
       const email = req.params.email;
       // console.log(email);
       // const query = { email: email };
       const result = await recipesCollections.find({ email: email }).toArray();
-      console.log(result);
+      // console.log(result);
 
       res.send(result);
     });
