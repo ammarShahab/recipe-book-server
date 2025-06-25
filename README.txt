@@ -32,6 +32,16 @@ Make sure you have the following installed on your system:
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/your-username/b11a10-recipes-serverside.git
+git clone https://github.com/your-username/recipe-book-server.git
 cd b11a10-recipes-serverside
+
+## API Endpoints
+
+| Method | Endpoint                | Description                    |
+| ------ | ---------------------- | ------------------------------ |
+| POST   | `/recipes`             | Create a new recipe            |
+| GET    | `/recipes`             | Get all recipes                |
+| GET    | `/recipes/:id`         | Get recipe by ID               |
+| GET    | `/top-recipes`         | Get top 6 recipes by likes     |
+| GET    | `/recipes-email/:email`| Get recipes by user email      |
+| DELETE | `/recipes/:id`         | Delete a recipe by ID          |
