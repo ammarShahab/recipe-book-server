@@ -48,7 +48,7 @@ async function run() {
       res.send(result);
     });
 
-    // show top recipes
+    // show top recipe
     app.get("/top-recipes", async (req, res) => {
       const result = await recipesCollections
         .find()
