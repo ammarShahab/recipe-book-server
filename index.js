@@ -74,6 +74,37 @@ async function run() {
       res.send(result);
     });
 
+    // update recipe
+    /* app.put("/recipes/:id", async (req, res) => {
+      const { id } = req.params;
+      const updatedRecipe = req.body;
+      console.log(updatedRecipe);
+
+      const result = await recipesCollections.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedRecipe }
+      );
+
+      res.send(result);
+    }); */
+
+    app.put("/recipes/:id", async (req, res) => {
+      const { id } = req.params;
+      const updatedRecipe = req.body;
+
+      // Remove _id if it exists in body
+      if (updatedRecipe._id) {
+        delete updatedRecipe._id;
+      }
+
+      const result = await recipesCollections.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedRecipe }
+      );
+
+      res.send(result);
+    });
+
     // delete api
     app.delete("/recipes/:id", async (req, res) => {
       const id = req.params.id;
