@@ -53,7 +53,7 @@ async function run() {
       const result = await recipesCollections
         .find()
         .sort({ likes: -1 })
-        .limit(6)
+        .limit(8)
         .toArray();
       // console.log(result);
 
@@ -91,11 +91,6 @@ async function run() {
     app.put("/recipes/:id", async (req, res) => {
       const { id } = req.params;
       const updatedRecipe = req.body;
-
-      // Remove _id if it exists in body
-      if (updatedRecipe._id) {
-        delete updatedRecipe._id;
-      }
 
       const result = await recipesCollections.updateOne(
         { _id: new ObjectId(id) },
