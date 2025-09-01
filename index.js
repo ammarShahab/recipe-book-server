@@ -61,7 +61,6 @@ async function run() {
     });
 
     // show myrecipes to ui that i added
-
     app.get("/recipes-email/:email", async (req, res) => {
       // console.log(req.params);
 
@@ -75,19 +74,6 @@ async function run() {
     });
 
     // update recipe
-    /* app.put("/recipes/:id", async (req, res) => {
-      const { id } = req.params;
-      const updatedRecipe = req.body;
-      console.log(updatedRecipe);
-
-      const result = await recipesCollections.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updatedRecipe }
-      );
-
-      res.send(result);
-    }); */
-
     app.put("/recipes/:id", async (req, res) => {
       const { id } = req.params;
       const updatedRecipe = req.body;
@@ -98,6 +84,55 @@ async function run() {
       );
 
       res.send(result);
+    });
+
+    // Like route
+    app.put("/recipes/:id/like", async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        // First, fetch recipe
+        const recipe = await recipesCollections.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!recipe) {
+          return res
+            .status(404)
+            .json({ success: false, error: "Recipe not found" });
+        }
+
+        // Ensure likes is a number
+        let currentLikes = recipe.likes;
+        if (typeof currentLikes === "string") {
+          currentLikes = parseInt(currentLikes) || 0;
+        } else if (typeof currentLikes !== "number") {
+          currentLikes = 0;
+        }
+
+        // Update likes
+        const newLikes = currentLikes + 1;
+
+        const result = await recipesCollections.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { likes: newLikes } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res
+            .status(400)
+            .json({ success: false, error: "Failed to update likes" });
+        }
+
+        res.json({
+          success: true,
+          message: "Recipe liked successfully!",
+          likes: newLikes,
+        });
+      } catch (err) {
+        console.error("Like Error:", err);
+        res.status(500).json({ success: false, error: "Server error" });
+      }
     });
 
     // delete api
