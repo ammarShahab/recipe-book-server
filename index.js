@@ -90,8 +90,15 @@ async function run() {
     app.put("/recipes/:id/like", async (req, res) => {
       try {
         const { id } = req.params;
+        const { userId } = req.body;
 
-        // First, fetch recipe
+        if (!userId) {
+          return res
+            .status(400)
+            .json({ success: false, error: "User ID required" });
+        }
+
+        // Fetch recipe
         const recipe = await recipesCollections.findOne({
           _id: new ObjectId(id),
         });
@@ -102,23 +109,35 @@ async function run() {
             .json({ success: false, error: "Recipe not found" });
         }
 
-        // Ensure likes is a number
-        let currentLikes = recipe.likes;
-        if (typeof currentLikes === "string") {
-          currentLikes = parseInt(currentLikes) || 0;
-        } else if (typeof currentLikes !== "number") {
-          currentLikes = 0;
+        // Make sure likedBy exists
+        let likedBy = Array.isArray(recipe.likedBy) ? recipe.likedBy : [];
+
+        // console.log("likedBy", likedBy);
+        // console.log("Arrayis", Array.isArray(likedBy));
+        // console.log(recipe);
+
+        // Check if user already liked
+        if (likedBy.includes(userId)) {
+          return res.json({
+            success: false,
+            message: "You already liked this recipe",
+            likes: recipe.likes,
+          });
         }
 
-        // Update likes
-        const newLikes = currentLikes + 1;
+        // Ensure likes is a number
+        let currentLikes = typeof recipe.likes === "number" ? recipe.likes : 0;
 
-        const result = await recipesCollections.updateOne(
+        // Increment likes and push userId into likedBy
+        const updated = await recipesCollections.updateOne(
           { _id: new ObjectId(id) },
-          { $set: { likes: newLikes } }
+          {
+            $set: { likes: currentLikes + 1 },
+            $push: { likedBy: userId },
+          }
         );
 
-        if (result.modifiedCount === 0) {
+        if (updated.modifiedCount === 0) {
           return res
             .status(400)
             .json({ success: false, error: "Failed to update likes" });
@@ -127,8 +146,9 @@ async function run() {
         res.json({
           success: true,
           message: "Recipe liked successfully!",
-          likes: newLikes,
+          likes: currentLikes + 1,
         });
+        // console.log("updated recipe", recipe);
       } catch (err) {
         console.error("Like Error:", err);
         res.status(500).json({ success: false, error: "Server error" });
